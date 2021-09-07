@@ -24,8 +24,8 @@ int main()
 //    /* Declare struct for DAC config */
 //    LL_DAC_InitTypeDef DAC_InitStruct;
 
-//    SystemClock_Config();               // Max-perfomance configure
-//    LCD_GLASS_Init();                   // LCD low-level init
+    SystemClock_Config();               // Max-perfomance configure
+    LCD_GLASS_Init();                   // LCD low-level init
     
     /* Enable GPIOA and GPIOC clock */
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
