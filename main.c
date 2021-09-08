@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdbool.h>
-
 #include "stm32l1xx.h"
 /* Base LL driver included */
 #include "stm32l1xx_ll_system.h"
@@ -16,16 +15,15 @@
 /* Configuration */
 #include "systemclock_config.h"
 
-bool state = false;
-char disp_str[7];
+bool state_user_btn = false;
+bool state_m1 = false;
+bool state_m2 = false;
+//char disp_str[7];
 
 int main()
 {
     /* Declare struct for GPIO config */
     LL_GPIO_InitTypeDef GPIO_InitStruct;
-    
-//    /* Declare struct for DAC config */
-//    LL_DAC_InitTypeDef DAC_InitStruct;
 
     SystemClock_Config();               // Max-perfomance configure
     LCD_GLASS_Init();                   // LCD low-level init
@@ -40,7 +38,7 @@ int main()
     /* Enable System configuration controller clock */
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
 
-    /* Config Usr-Btn GPIOA PA0 as input */
+    /* Config User-Botton GPIOA PA0 as input */
 	GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pin = LL_GPIO_PIN_0;
 	GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
@@ -70,15 +68,26 @@ int main()
     
     /* EXTI Line 12 (EXTI12) for PA12 AND PC12 */
     LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE12);
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_12);
+    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_12);
     LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE12);
     LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_12);
     LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_12);
     
-    //NVIC_EnableIRQ((IRQn_Type) 6);
-    //NVIC_SetPriority((IRQn_Type) 6, 0);
+    /* NVIC */
+    NVIC_EnableIRQ((IRQn_Type) 6);
+    NVIC_SetPriority((IRQn_Type) 6, 0);
     NVIC_EnableIRQ((IRQn_Type) 40);
     NVIC_SetPriority((IRQn_Type) 40, 1);
     
+        /* Enable GPIOA and GPIOC clock */
+        LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
+        /* Config LED as input */
+        GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_6;
+        LL_GPIO_Init(GPIOB, &GPIO_InitStruct);                  // Write configure value to registers
+        GPIO_InitStruct.Pin = LL_GPIO_PIN_7;
+        LL_GPIO_Init(GPIOB, &GPIO_InitStruct);                  // Write configure value to registers
     
     
     while(1){
@@ -87,40 +96,75 @@ int main()
 
 }
 
-//void EXTI0_IRQHandler(void) {
-//	// Check if EXTI0 bit is set
-//	if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_0)) {
+void EXTI0_IRQHandler(void) {
+	// Check if EXTI0 bit is set
+	if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_0)) {
+		/* Jump here if rising edge detected */
+        if (state_user_btn == false) {
+            state_user_btn = true;
+            LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
+        }
+        else {
+            state_user_btn = false;
+            LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
+        }
+        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_0);				// Clear pending bit by writing 1
+	}
+//    if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_0)) {
 //		LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_0);				// Clear pending bit by writing 1
 //		/* Jump here if rising edge detected */
-//        if (state == false) {
+//        if (state_user_btn == false) {
 //            sprintf(disp_str, "LD: ON");
 //			LCD_GLASS_DisplayString((uint8_t*)disp_str);
-//            state = true;               // LED4 state: on
+//            state_user_btn = true;               // LED4 state: on
 //        }
 //        else {
 //            sprintf(disp_str, "LD:OFF");
 //			LCD_GLASS_DisplayString((uint8_t*)disp_str);
-//            state = false;              // LED4 state: off
+//            state_user_btn = false;              // LED4 state: off
 //        }
 //	}
-//}
+}
 
 void EXTI15_10_IRQHandler(void) {
 	// Check if EXTI12 bit is set
-	if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_12)) {
-		
-		/* Jump here if rising edge detected */
-        if (state == false) {
-            sprintf(disp_str, "LD: ON");
-			LCD_GLASS_DisplayString((uint8_t*)disp_str);
-            state = true;               // LED4 state: on
+	if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_12)) {
+        if (!(LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_12))) {
+            if (state_m1 == false) {
+                state_m1 = true;
+                LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
+            }
+            else {
+                state_m1 = false;
+                LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
+            }
         }
-        else {
-            sprintf(disp_str, "LD:OFF");
-			LCD_GLASS_DisplayString((uint8_t*)disp_str);
-            state = false;              // LED4 state: off
+        if (!(LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_12))) {
+            if (state_m2 == false) {
+                state_m2 = true;
+                LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6);
+            }
+            else {
+                state_m2 = false;
+                LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6);
+            }
         }
         LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);			// Clear pending bit by writing 1
-	}
+    }
+    
+//        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);			// Clear pending bit by writing 1
+//		/* Jump here if rising edge detected */
+//        if (state == false) {
+//            //sprintf(disp_str, "LD: ON");
+//			//LCD_GLASS_DisplayString((uint8_t*)disp_str);
+//            state = true;               // LED4 state: on
+//        }
+//        else {
+//            //sprintf(disp_str, "LD:OFF");
+//			//LCD_GLASS_DisplayString((uint8_t*)disp_str);
+//            state = false;              // LED4 state: off
+//        }
+//        
+//	}
 }
 
