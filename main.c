@@ -46,8 +46,8 @@ int main()
 	GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
 	LL_GPIO_Init(GPIOA, &GPIO_InitStruct);                  // Write configure value to registers
     
-    /* Config Matrix-switch1 GPIOA PA12 as input */
-    GPIO_InitStruct.Pin = LL_GPIO_PIN_12;
+    /* Config Matrix-switch1 GPIOA PA11 as input */
+    GPIO_InitStruct.Pin = LL_GPIO_PIN_11;
     LL_GPIO_Init(GPIOA, &GPIO_InitStruct);                  // Write configure value to registers
     
     /* Config Matrix-switch2 GPIOA PC12 as input */
@@ -66,10 +66,12 @@ int main()
     LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
     LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_0);
     
-    /* EXTI Line 12 (EXTI12) for PA12 AND PC12 */
-    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE12);
-    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_12);
-    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_12);
+    /* EXTI Line 11 (EXTI12) for PA11 */
+    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE11);
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_11);
+    LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_11);
+    
+    /* EXTI Line 11 (EXTI12) for PC12 */
     LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTC, LL_SYSCFG_EXTI_LINE12);
     LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_12);
     LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_12);
@@ -127,26 +129,30 @@ void EXTI0_IRQHandler(void) {
 }
 
 void EXTI15_10_IRQHandler(void) {
-	// Check if EXTI12 bit is set
-	if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_12)) {
-        if (!(LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_12))) {
+	// Check if EXTI11 bit is set
+	if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_11)) {
+        if (!(LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_11))) {
             if (state_m1 == false) {
                 state_m1 = true;
-                LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
-            }
-            else {
-                state_m1 = false;
-                LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
-            }
-        }
-        if (!(LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_12))) {
-            if (state_m2 == false) {
-                state_m2 = true;
                 LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6);
             }
             else {
-                state_m2 = false;
+                state_m1 = false;
                 LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6);
+            }
+        }
+        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_11);			// Clear pending bit by writing 1
+    }
+    // Check if EXTI12 bit is set
+    if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_12)) {
+        if (!(LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_12))) {
+            if (state_m2 == false) {
+                state_m2 = true;
+                LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
+            }
+            else {
+                state_m2 = false;
+                LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
             }
         }
         LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);			// Clear pending bit by writing 1
@@ -167,4 +173,3 @@ void EXTI15_10_IRQHandler(void) {
 //        
 //	}
 }
-
