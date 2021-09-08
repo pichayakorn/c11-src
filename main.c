@@ -16,6 +16,9 @@
 /* Configuration */
 #include "systemclock_config.h"
 
+bool state = false;
+char disp_str[7];
+
 int main()
 {
     /* Declare struct for GPIO config */
@@ -33,6 +36,9 @@ int main()
     
     /* Enable DAC clock */
     LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_DAC1);
+    
+    /* Enable System configuration controller clock */
+    LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
 
     /* Config Usr-Btn GPIOA PA0 as input */
 	GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
@@ -49,10 +55,35 @@ int main()
     
     LL_DAC_Enable(DAC1, LL_DAC_CHANNEL_2);
     
+    LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTA, LL_SYSCFG_EXTI_LINE0);
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_0);
+    LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_0);
+    
+    NVIC_EnableIRQ((IRQn_Type) 6);
+    NVIC_SetPriority((IRQn_Type) 6, 0);
+    
     
     
     while(1){
-        LL_DAC_ConvertData12RightAligned(DAC1, LL_DAC_CHANNEL_2, 0xFFF);
+        //LL_DAC_ConvertData12RightAligned(DAC1, LL_DAC_CHANNEL_2, 0xFFF);
     }
 
+}
+
+void EXTI0_IRQHandler(void) {
+	// Check if EXTI0 bit is set
+	if((EXTI->PR & (1<<0)) == 1) {
+		EXTI->PR |= (1<<0);				// Clear pending bit by writing 1
+		/* Jump here if rising edge detected */
+        if (state == false) {
+            sprintf(disp_str, "LD: ON");
+			LCD_GLASS_DisplayString((uint8_t*)disp_str);
+            state = true;               // LED4 state: on
+        }
+        else {
+            sprintf(disp_str, "LD:OFF");
+			LCD_GLASS_DisplayString((uint8_t*)disp_str);
+            state = false;              // LED4 state: off
+        }
+	}
 }
