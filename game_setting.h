@@ -41,10 +41,12 @@ void LCD_CLEAR() {
     LCD_GLASS_Clear();
 }
 
+/** Is user botton pressed **/
 bool isUserBtnPinSet(void) {
     return LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_0);
 }
 
+/** Matrix switch value **/
 const uint8_t MATRIX_VALUE(void) {
     if (!state_m1 && !state_m2)     // PA = 0 and PC = 0
         return 0x00;
@@ -60,5 +62,32 @@ void RESET_MATRIX_VALUE(void) {
     state_m1 = false;
     state_m2 = false;
 }
+
+/** LED **/
+void LED_GREEN_ON(void) {
+    LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
+} // PB7 ON
+
+void LED_GREEN_OFF(void) {
+    LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
+} // PB7 OFF
+
+void LED_BLUE_ON(void) {
+    LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6);
+} // PB6 ON
+
+void LED_BLUE_OFF(void) {
+    LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6);
+} // PB6 OFF
+
+void LED_ALL_ON(void) {
+    LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6);
+    LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
+} // PB6 and PB7 ON
+
+void LED_ALL_OFF(void) {
+    LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6);
+    LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
+} // PB6 and PB7 ON
 
 #endif
