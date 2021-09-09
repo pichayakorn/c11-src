@@ -29,14 +29,14 @@ void EXTI0_IRQHandler(void) {
 	// Check if EXTI0 bit is seted by interrupt
 	if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_0)) {
 		/* Jump here if rising edge detected */
-        if (state_user_btn == false) {
-            state_user_btn = true;
-            LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
-        }
-        else {
-            state_user_btn = false;
-            LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
-        }
+        // if (state_user_btn == false) {
+        //     state_user_btn = true;
+        //     LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
+        // }
+        // else {
+        //     state_user_btn = false;
+        //     LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
+        // }
         LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_0);				    // Clear pending bit by writing 1
 	}
 }
