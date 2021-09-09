@@ -14,7 +14,7 @@ C11 group project
 ### GUI
 1. Click drop down `code` button on top of this repository.
 2. Open with GitHub Desktop.
-3. Clone this repository to your project directory (replace src in `Project/`)
+3. Clone this repository to your project directory (replace src in `Project/src`)
 4. Open in Keil uVision5.
 
 ### Bash
