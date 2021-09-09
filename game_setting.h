@@ -38,8 +38,7 @@ void LCD_DISPLAY(char * disp_str) {
 } // Display string to LCD
 
 void LCD_CLEAR() {
-    char disp_str[7] = "      ";
-    LCD_GLASS_DisplayString((uint8_t*)disp_str);
+    LCD_GLASS_Clear();
 }
 
 bool isUserBtnPinSet(void) {
@@ -48,13 +47,13 @@ bool isUserBtnPinSet(void) {
 
 const uint8_t MATRIX_VALUE(void) {
     if (!state_m1 && !state_m2)     // PA = 0 and PC = 0
-        return 0x03;
-    if (state_m1 && !state_m2)      // PA = 1 and PC = 0
-        return 0x02;
-    if (!state_m1 && state_m2)      // PA = 0 and PC = 1
-        return 0x01;
-    if (state_m1 && state_m2)       // PA = 0 and PC = 0
         return 0x00;
+    if (state_m1 && !state_m2)      // PA = 1 and PC = 0
+        return 0x01;
+    if (!state_m1 && state_m2)      // PA = 0 and PC = 1
+        return 0x02;
+    if (state_m1 && state_m2)       // PA = 1 and PC = 1
+        return 0x03;
 }
 
 void RESET_MATRIX_VALUE(void) {
