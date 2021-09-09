@@ -21,7 +21,6 @@
 #ifndef __irqHandler_conf
 #define __irqHandler_conf
 
-//bool state_user_btn = false;
 bool state_m1 = false;
 bool state_m2 = false;
 
@@ -35,31 +34,23 @@ void EXTI0_IRQHandler(void) {
 void EXTI15_10_IRQHandler(void) {
 	/* Check if EXTI11 bit is seted by interrupt */
 	if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_11)) {
-        //if (!(LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_11))) {
-            if (state_m1 == false) {
-                state_m1 = true;
-                LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6);
-            }
-            else {
-                state_m1 = false;
-                LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6);
-            }
-        //}
+        if (state_m1 == false) {
+            state_m1 = true;
+        }
+        else {
+            state_m1 = false;
+        }
         LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_11);			    // Clear pending bit by writing 1
     }
     
     /* Check if EXTI12 bit is seted by interrupt */
     if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_12)) {
-        //if (!(LL_GPIO_IsInputPinSet(GPIOC, LL_GPIO_PIN_12))) {
-            if (state_m2 == false) {
-                state_m2 = true;
-                LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_7);
-            }
-            else {
-                state_m2 = false;
-                LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_7);
-            }
-        //}
+        if (state_m2 == false) {
+            state_m2 = true;
+        }
+        else {
+            state_m2 = false;
+        }
         LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);			    // Clear pending bit by writing 1
     }
 }
