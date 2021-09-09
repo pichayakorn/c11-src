@@ -57,26 +57,32 @@ int main()
                         playerSelect = 1;
                         sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
                         LCD_DISPLAY(disp_str);
+                        LED_ALL_OFF();
                         break;
                     case 1:
                         playerSelect = 2;
                         sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
                         LCD_DISPLAY(disp_str);
+                        LED_ALL_OFF();
+                        LED_BLUE_ON();
                         break;
                     case 2:
                         playerSelect = 3;
                         sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
                         LCD_DISPLAY(disp_str);
+                        LED_ALL_OFF();
+                        LED_GREEN_ON();
                         break;
                     case 3:
-                        sprintf(disp_str, "%2d-P-R", sum);
-                        LCD_DISPLAY(disp_str);
                         srand(i++);
                         playerSelect = rand() % 3 + 1;
+                        sprintf(disp_str, "%2d-P-R", sum);
+                        LCD_DISPLAY(disp_str);
+                        LED_ALL_ON();
                         break;
                 }
             }
-
+            LED_ALL_OFF();
             /** Display player selected value **/
             sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
             LCD_DISPLAY(disp_str);
