@@ -62,7 +62,4 @@ void RESET_MATRIX_VALUE(void) {
     state_m2 = false;
 }
 
-
-
-
 #endif
