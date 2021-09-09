@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include "stdlib.h"
 /* Base register address header file */
 #include "stm32l1xx.h"
 /* Base LL driver included */
@@ -28,7 +29,121 @@ int main()
     /* C11:Count 24 game register configuration */
     C11_STM32L152RB_CONFIG();
 
-    while(1){
+    while(1) {
+        int sum = 0;                                // In-game main counter
+        int i = 1;                                  // For random rand() seed
+        bool check_win = true;		                // Check player status: default true
+        int playerSelect = 0;                       // Player selected value
+        int computerSelect = 0;                     // Computer selected value
+        char disp_str[7];                           // Temporary LCD output string
+        
+        LCD_DISPLAY("READY ");
+        while(!isUserBtnPinSet());                  // Press user button to start
+        LCD_CLEAR();
+        LL_mDelay(400);
 
+        /** Game start **/
+        while (sum < 24 && check_win) {
+            /** Player turn **/
+            /**  Player select value using matrix switch 
+              *  Press user-botton to confirm selected value
+              **/
+            BUZZER_ON();
+            LL_mDelay(200);
+            BUZZER_OFF();
+            while(!isUserBtnPinSet()) {
+                switch(MATRIX_VALUE()) {
+                    case 0:                         // Default value +1
+                        playerSelect = 1;
+                        sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
+                        LCD_DISPLAY(disp_str);
+                        break;
+                    case 1:
+                        playerSelect = 2;
+                        sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
+                        LCD_DISPLAY(disp_str);
+                        break;
+                    case 2:
+                        playerSelect = 3;
+                        sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
+                        LCD_DISPLAY(disp_str);
+                        break;
+                    case 3:
+                        sprintf(disp_str, "%2d-P-R", sum);
+                        LCD_DISPLAY(disp_str);
+                        srand(i++);
+                        playerSelect = rand() % 3 + 1;
+                        break;
+                }
+            }
+
+            /** Display player selected value **/
+            sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
+            LCD_DISPLAY(disp_str);
+            LL_mDelay(500);
+            LCD_CLEAR();
+
+            /** Increase counter value **/
+            sum += playerSelect;
+
+            /** Checking if over 24, player lose **/
+            if (sum >= 24)
+                check_win = false;
+            
+            /** Player display: Limited display at 24 **/
+            sprintf(disp_str, "%2d-P--", check_win?sum:24);
+            LCD_DISPLAY(disp_str);
+            LL_mDelay(800);
+            LCD_CLEAR();
+            
+            /** Computer turn **/
+            if (check_win) {
+                if (sum < 20) {
+                    srand(i++);
+                    computerSelect = rand() % 3 + 1;
+                }
+                else if (sum < 23) {
+                    computerSelect = 23 - sum;
+                }
+                else {
+                    computerSelect = 1;              // Player left at 23. Computer +1 lose
+                }
+                /** Display computer selected value **/
+                sprintf(disp_str, "%2d-C-%d", sum, computerSelect);
+                LCD_DISPLAY(disp_str);
+                LL_mDelay(1000);
+                LCD_CLEAR();
+
+                /** Increase counter value **/
+                sum += computerSelect;
+
+                /** Computer display: Limited display at 24 **/
+                sprintf(disp_str, "%2d-C--", check_win?sum:24);
+                LCD_DISPLAY(disp_str);
+                LL_mDelay(1000);
+                LCD_CLEAR();
+            }
+
+            /** Reset Matrix value to default **/
+            RESET_MATRIX_VALUE();
+        }
+            
+        /** Display player status **/
+        sprintf(disp_str, "P-%s", check_win?"WIN ":"LOSE");
+        LCD_DISPLAY(disp_str);
+
+        /** Bip! Bip! **/
+        BUZZER_ON();
+        LL_mDelay(200);
+        BUZZER_OFF();
+        LL_mDelay(200);
+        BUZZER_ON();
+        LL_mDelay(200);
+        BUZZER_OFF();
+
+        // Try again
+        while(!isUserBtnPinSet());
+        LCD_CLEAR();
+        LL_mDelay(500);
     }
 }
