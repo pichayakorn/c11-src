@@ -21,6 +21,23 @@ C11 group project
 ```bash
 $ git clone https://github.com/pichayakorn/c11-src.git
 ```
+### Included External Files
+```c
+/* Base LL driver included */
+#include "stm32l1xx_ll_system.h"
+#include "stm32l1xx_ll_rcc.h"
+#include "stm32l1xx_ll_gpio.h"
+#include "stm32l1xx_ll_pwr.h"
+#include "stm32l1xx_ll_utils.h"
+#include "stm32l1xx_ll_bus.h"
+/* DAC driver included */
+#include "stm32l1xx_ll_dac.h"
+/* EXTI driver included */
+#include "stm32l1xx_ll_exti.h"
+/* LCD driver included */
+#include "stm32l1xx_ll_lcd.h"
+#include "stm32l152_glass_lcd.h"
+```
 
 ## ⚠️ Caution
 - Do not develop on `main` branch, create another branch instead.
