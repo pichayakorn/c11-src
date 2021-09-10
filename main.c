@@ -21,7 +21,7 @@
 #include "systemclock_config.h"
 #include "c11_stm32l152rb_config.h"
 #include "irqhandler_config.h"
-/* Configuration */
+/* In-game functions */
 #include "game_setting.h"
 
 int main()

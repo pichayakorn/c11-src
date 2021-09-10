@@ -25,15 +25,15 @@ bool state_m1 = false;
 bool state_m2 = false;
 
 void EXTI0_IRQHandler(void) {
-	// Check if EXTI0 bit is seted by interrupt
-	if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_0)) {
+    // Check if EXTI0 bit is seted by interrupt
+    if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_0)) {
         LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_0);				    // Clear pending bit by writing 1
-	}
+    }
 }
 
 void EXTI15_10_IRQHandler(void) {
-	/* Check if EXTI11 bit is seted by interrupt */
-	if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_11)) {
+    /* Check if EXTI11 bit is seted by interrupt */
+    if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_11)) {
         if (state_m1 == false) {
             state_m1 = true;
         }
