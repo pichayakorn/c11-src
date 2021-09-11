@@ -28,7 +28,7 @@ void game_loading(void);
 
 int main()
 {
-    /* C11:Count 24 game register configuration */
+    /** C11:Count 24 game register configuration **/
     C11_STM32L152RB_CONFIG();
 
     while(1) {
@@ -43,8 +43,8 @@ int main()
 
         /** Game start **/
         while (sum < 24) {
-            /** Player turn **/
-            /**  Player select value using matrix switch 
+            /**  Player turn
+              *  Player select value using matrix switch 
               *  Press user-botton to confirm selected value
               **/
             BUZZER_ON();
