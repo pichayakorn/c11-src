@@ -24,6 +24,8 @@
 /* In-game functions */
 #include "game_setting.h"
 
+void game_loading(void);
+
 int main()
 {
     /* C11:Count 24 game register configuration */
@@ -37,13 +39,10 @@ int main()
         int computerSelect = 0;                     // Computer selected value
         char disp_str[7];                           // Temporary LCD output string
         
-        LCD_DISPLAY("READY ");
-        while(!isUserBtnPinSet());                  // Press user button to start
-        LCD_CLEAR();
-        LL_mDelay(400);
+        game_loading();
 
         /** Game start **/
-        while (sum < 24 && check_win) {
+        while (sum < 24) {
             /** Player turn **/
             /**  Player select value using matrix switch 
               *  Press user-botton to confirm selected value
@@ -87,7 +86,6 @@ int main()
             sprintf(disp_str, "%2d-P-%d", sum, playerSelect);
             LCD_DISPLAY(disp_str);
             LL_mDelay(500);
-            LCD_CLEAR();
 
             /** Increase counter value **/
             sum += playerSelect;
@@ -100,7 +98,6 @@ int main()
             sprintf(disp_str, "%2d-P--", check_win?sum:24);
             LCD_DISPLAY(disp_str);
             LL_mDelay(800);
-            LCD_CLEAR();
             
             /** Computer turn **/
             if (check_win) {
@@ -117,8 +114,7 @@ int main()
                 /** Display computer selected value **/
                 sprintf(disp_str, "%2d-C-%d", sum, computerSelect);
                 LCD_DISPLAY(disp_str);
-                LL_mDelay(1000);
-                LCD_CLEAR();
+                LL_mDelay(800);
 
                 /** Increase counter value **/
                 sum += computerSelect;
@@ -126,14 +122,13 @@ int main()
                 /** Computer display: Limited display at 24 **/
                 sprintf(disp_str, "%2d-C--", check_win?sum:24);
                 LCD_DISPLAY(disp_str);
-                LL_mDelay(1000);
-                LCD_CLEAR();
+                LL_mDelay(600);
             }
 
             /** Reset Matrix value to default **/
             RESET_MATRIX_VALUE();
         }
-            
+        
         /** Display player status **/
         sprintf(disp_str, "P-%s", check_win?"WIN ":"LOSE");
         LCD_DISPLAY(disp_str);
@@ -147,9 +142,28 @@ int main()
         LL_mDelay(200);
         BUZZER_OFF();
 
-        // Try again
-        while(!isUserBtnPinSet());
-        LCD_CLEAR();
+        /** Try again **/
+        while(!isUserBtnPinSet());      // Press user button to play again
         LL_mDelay(500);
     }
+}
+
+void game_loading(void) {
+    LCD_DISPLAY("I");
+    LL_mDelay(100);
+    LCD_DISPLAY("II");
+    LL_mDelay(100);
+    LCD_DISPLAY("III");
+    LL_mDelay(100);
+    LCD_DISPLAY("IIII");
+    LL_mDelay(100);
+    LCD_DISPLAY("IIIII");
+    LL_mDelay(100);
+    LCD_DISPLAY("IIIIII");
+    LL_mDelay(100);
+
+    LCD_DISPLAY("READY ");
+    while(!isUserBtnPinSet());      // Press user button to start
+    LL_mDelay(400);
+    LCD_CLEAR();
 }
