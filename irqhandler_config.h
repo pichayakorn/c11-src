@@ -27,7 +27,7 @@ bool state_m2 = false;
 void EXTI0_IRQHandler(void) {
     // Check if EXTI0 bit is seted by interrupt
     if(LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_0)) {
-        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_0);				    // Clear pending bit by writing 1
+        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_0);             // Clear pending bit by writing 1
     }
 }
 
@@ -40,7 +40,7 @@ void EXTI15_10_IRQHandler(void) {
         else {
             state_m1 = false;
         }
-        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_11);			    // Clear pending bit by writing 1
+        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_11);            // Clear pending bit by writing 1
     }
     
     /* Check if EXTI12 bit is seted by interrupt */
@@ -51,7 +51,7 @@ void EXTI15_10_IRQHandler(void) {
         else {
             state_m2 = false;
         }
-        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);			    // Clear pending bit by writing 1
+        LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_12);            // Clear pending bit by writing 1
     }
 }
 
